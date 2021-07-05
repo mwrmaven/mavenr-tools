@@ -2,8 +2,7 @@ package com.mavenr.email;
 
 
 import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
+import javax.mail.internet.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -34,6 +33,77 @@ public class MavenrQQEmail implements MavenrEmail{
      */
     @Override
     public void sendMail(String from, List<String> to, String subject, String content) {
+        try {
+            Message message = getMessage(from, to);
+            message.setSubject(subject);
+            message.setText(content);
+            // 发送邮件
+            Transport.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * 发送html格式内容的邮件(多接收人)
+     * @param from 发送人
+     * @param to 接收人集合
+     * @param subject 主题
+     * @param content html格式内容
+     */
+    public void sendHtmlMail(String from, List<String> to, String subject, String content) {
+        try {
+            Multipart multipart = new MimeMultipart();
+            BodyPart bodyPart = new MimeBodyPart();
+            bodyPart.setContent(content, "text/html");
+            multipart.addBodyPart(bodyPart);
+            Message message = getMessage(from, to);
+            message.setSubject(subject);
+            message.setContent(multipart);
+            message.saveChanges();
+            // 发送邮件
+            Transport.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 发送普通邮件(单个接收人)
+     * @param from 发送人邮箱
+     * @param to 接收人邮箱
+     * @param subject 邮件主题
+     * @param content 邮件内容
+     */
+    public void sendMail(String from, String to, String subject, String content) {
+        List<String> tos = new ArrayList<>();
+        tos.add(to);
+        sendMail(from, tos, subject, content);
+    }
+
+    /**
+     * 发送邮件内容html格式的单个接收人邮件
+     * @param from 发送人
+     * @param to 接收人集合
+     * @param subject 主题
+     * @param content html格式内容，例如 <div>test</div>
+     */
+    public void sendHtmlMail(String from, String to, String subject, String content) {
+        List<String> tos = new ArrayList<>();
+        tos.add(to);
+        sendHtmlMail(from, tos, subject, content);
+    }
+
+
+    /**
+     * 根据发送人和接收人，创建邮件消息
+     * @param from
+     * @param to
+     * @return
+     * @throws MessagingException
+     */
+    public Message getMessage(String from, List<String> to) throws MessagingException {
         // 设置QQ邮箱参数
         Properties properties = new Properties();
         properties.put("mail.smtp.auth", "true");
@@ -57,29 +127,9 @@ public class MavenrQQEmail implements MavenrEmail{
         String realAddresses = addresses.substring(0, addresses.length() - 1);
         // 创建消息
         Message message = new MimeMessage(session);
-        try {
-            message.setFrom(new InternetAddress(from));
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(realAddresses));
-            message.setSubject(subject);
-            message.setText(content);
-            // 发送邮件
-            Transport.send(message);
-        } catch (MessagingException e) {
-            e.printStackTrace();
-        }
+        message.setFrom(new InternetAddress(from));
+        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(realAddresses));
 
-    }
-
-    /**
-     * 发送普通邮件(单个接收人)
-     * @param from 发送人邮箱
-     * @param to 接收人邮箱
-     * @param subject 邮件主题
-     * @param content 邮件内容
-     */
-    public void sendMail(String from, String to, String subject, String content) {
-        List<String> tos = new ArrayList<>();
-        tos.add(to);
-        sendMail(from, tos, subject, content);
+        return message;
     }
 }
