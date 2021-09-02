@@ -18,4 +18,5 @@ public interface MavenrEmail {
      * @param content 邮件内容
      */
     void sendMail(String from, List<String> to, String subject, String content) throws Exception;
+
 }

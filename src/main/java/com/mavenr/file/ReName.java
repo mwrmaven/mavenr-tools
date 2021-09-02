@@ -1,5 +1,7 @@
 package com.mavenr.file;
 
+import com.mavenr.utils.FileUtil;
+
 import java.io.File;
 
 /**
@@ -86,6 +88,33 @@ public class ReName {
     }
 
     /**
+     * replace the fixed characters, and new characters include identifications and numbers
+     * @param path file path
+     * @param fixOldChar old characters in file name
+     * @param identification logos in new characters
+     * @param start begin number
+     * @param step number of steps to increase the number
+     * @return
+     */
+    public static boolean replaceFixAndIdentificationIncreaseNumber(String path, String fixOldChar, String identification,
+                                                                    int start, int step) {
+        // get file array
+        File[] files = FileUtil.getFiles(path);
+        int tmp = start;
+        boolean flag = false;
+        for (int i = 0; i < files.length; i++) {
+            // newCharacters
+            String newChar = identification + tmp;
+            // replace old characters with new ones
+            flag = rename(files[i], fixOldChar, newChar);
+            if (!flag) {
+                return flag;
+            }
+            tmp += step;
+        }
+        return flag;
+    }
+    /**
      * file rename
      * @param f file
      * @param endIdentification the identifier appended after the file name
@@ -124,7 +153,7 @@ public class ReName {
     }
 
     /**
-     * file rename
+     * file rename:q
      * @param f file
      * @param oldChar old characters in file name
      * @param newChar new characters
@@ -132,6 +161,9 @@ public class ReName {
      */
     private static boolean rename(File f, String oldChar, String newChar) {
         String fileName = f.getName();
+        if (!fileName.contains(oldChar)) {
+            return true;
+        }
         String newFileName = fileName.replaceAll(oldChar, newChar);
         String filePath = f.getPath().substring(0, f.getPath().lastIndexOf(File.separator) + 1) + newFileName;
         boolean result = f.renameTo(new File(filePath));
