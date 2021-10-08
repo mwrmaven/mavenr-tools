@@ -8,10 +8,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -35,9 +32,17 @@ public class FileContentSort {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(f));
                 String line;
-                Map<String, String> map = new HashMap<>();
+                Map<String, List<String>> map = new HashMap<>();
                 while ((line = br.readLine()) != null) {
-                    map.put(line.split(splitStr)[num - 1], line);
+                    if (map.get(line.split(splitStr)[num - 1]) == null) {
+                        List<String> ls = new ArrayList<>();
+                        ls.add(line);
+                        map.put(line.split(splitStr)[num - 1], ls);
+                    } else {
+                        List<String> ls = map.get(line.split(splitStr)[num - 1]);
+                        ls.add(line);
+                    }
+
                 }
 
                 List<String> keys = map.keySet().stream().sorted(new Comparator<String>() {
@@ -55,7 +60,10 @@ public class FileContentSort {
                 }).collect(Collectors.toList());
                 StringBuilder sb = new StringBuilder();
                 for (String k : keys) {
-                    sb.append(map.get(k)).append("\n");
+                    List<String> strings = map.get(k);
+                    for (String text : strings) {
+                        sb.append(text).append("\n");
+                    }
                 }
                 String path = f.getPath();
                 File newFile = new File(path.substring(0, path.lastIndexOf(".")) + "_new" + path.substring(path.lastIndexOf(".")));
@@ -86,7 +94,7 @@ public class FileContentSort {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(f));
                 String line;
-                Map<String, String> map = new HashMap<>();
+                Map<String, List<String>> map = new HashMap<>();
                 while ((line = br.readLine()) != null) {
                     if (start < 0) {
                         start = 0;
@@ -95,9 +103,16 @@ public class FileContentSort {
                         end = start;
                     }
                     if (end >= line.length()) {
-                        map.put(line.substring(start - 1), line);
+                        end = line.length();
+                    }
+
+                    if (map.get(line.substring(start - 1, end)) == null) {
+                        List<String> ls = new ArrayList<>();
+                        ls.add(line);
+                        map.put(line.substring(start - 1, end), ls);
                     } else {
-                        map.put(line.substring(start - 1, end), line);
+                        List<String> ls = map.get(line.substring(start - 1, end));
+                        ls.add(line);
                     }
                 }
 
@@ -115,7 +130,10 @@ public class FileContentSort {
                 }).collect(Collectors.toList());
                 StringBuilder sb = new StringBuilder();
                 for (String k : keys) {
-                    sb.append(map.get(k)).append("\n");
+                    List<String> strings = map.get(k);
+                    for (String text : strings) {
+                        sb.append(text).append("\n");
+                    }
                 }
                 String path = f.getPath();
                 File newFile = new File(path.substring(0, path.lastIndexOf(".")) + "_new" + path.substring(path.lastIndexOf(".")));
