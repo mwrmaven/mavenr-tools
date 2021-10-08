@@ -1,5 +1,7 @@
 package com.mavenr.file;
 
+import com.mavenr.enums.SortType;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -26,8 +28,9 @@ public class FileContentSort {
      * @param files the source files
      * @param splitStr separator in text line
      * @param num index of text which is separated
+     * @param sortType sort type ( 1 is asc, -1 is desc, the default is ascending)
      */
-    public static void sortText(List<File> files, String splitStr, int num) {
+    public static void sortText(List<File> files, String splitStr, int num, int sortType) {
         for (File f : files) {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(f));
@@ -40,7 +43,14 @@ public class FileContentSort {
                 List<String> keys = map.keySet().stream().sorted(new Comparator<String>() {
                     @Override
                     public int compare(String o1, String o2) {
-                        return o1.compareTo(o2);
+                        if (SortType.ASC.getCode() == sortType) {
+                            return o1.compareTo(o2);
+                        } else if (SortType.DESC.getCode() == sortType) {
+                            return o2.compareTo(o1);
+                        } else {
+                            return o1.compareTo(o2);
+                        }
+
                     }
                 }).collect(Collectors.toList());
                 StringBuilder sb = new StringBuilder();
@@ -69,8 +79,9 @@ public class FileContentSort {
      * @param files the source files
      * @param start start index
      * @param end end index
+     * @param sortType sort type ( 1 is asc, -1 is desc, the default is ascending)
      */
-    public static void sortText(List<File> files, int start, int end) {
+    public static void sortText(List<File> files, int start, int end, int sortType) {
         for (File f : files) {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(f));
@@ -93,7 +104,13 @@ public class FileContentSort {
                 List<String> keys = map.keySet().stream().sorted(new Comparator<String>() {
                     @Override
                     public int compare(String o1, String o2) {
-                        return o1.compareTo(o2);
+                        if (SortType.ASC.getCode() == sortType) {
+                            return o1.compareTo(o2);
+                        } else if (SortType.DESC.getCode() == sortType) {
+                            return o2.compareTo(o1);
+                        } else {
+                            return o1.compareTo(o2);
+                        }
                     }
                 }).collect(Collectors.toList());
                 StringBuilder sb = new StringBuilder();
