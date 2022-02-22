@@ -1,6 +1,7 @@
 package com.mavenr.file;
 
 import com.mavenr.enums.SortType;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,14 +27,26 @@ public class FileContentSort {
      * @param splitStr separator in text line
      * @param num index of text which is separated
      * @param sortType sort type ( 1 is asc, -1 is desc, the default is ascending)
+     * @return 返回结果文件的路径
      */
-    public static void sortText(List<File> files, String splitStr, int num, int sortType) {
+    public static String sortText(List<File> files, String splitStr, int num, int sortType) {
+        StringBuilder paths = new StringBuilder();
         for (File f : files) {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(f));
                 String line;
                 Map<String, List<String>> map = new HashMap<>();
+                List<String> emptyKeyList = new ArrayList<>();
                 while ((line = br.readLine()) != null) {
+                    if (StringUtils.isEmpty(line) || StringUtils.isBlank(line)) {
+                        continue;
+                    }
+
+                    if (num > line.split(splitStr).length) {
+                        emptyKeyList.add(line);
+                        continue;
+                    }
+
                     if (map.get(line.split(splitStr)[num - 1]) == null) {
                         List<String> ls = new ArrayList<>();
                         ls.add(line);
@@ -65,8 +78,12 @@ public class FileContentSort {
                         sb.append(text).append("\n");
                     }
                 }
+                for (String text : emptyKeyList) {
+                    sb.append(text).append("\n");
+                }
                 String path = f.getPath();
-                File newFile = new File(path.substring(0, path.lastIndexOf(".")) + "_new" + path.substring(path.lastIndexOf(".")));
+                String newFilePath = path.substring(0, path.lastIndexOf(".")) + "_new" + path.substring(path.lastIndexOf("."));
+                File newFile = new File(newFilePath);
                 newFile.createNewFile();
                 FileChannel fc = new FileOutputStream(newFile).getChannel();
                 ByteBuffer buffer = ByteBuffer.allocate(40960);
@@ -74,11 +91,12 @@ public class FileContentSort {
                 buffer.flip();
                 fc.write(buffer);
                 fc.close();
-
+                paths.append(newFilePath).append("\n");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        return paths.toString();
     }
 
     /**
@@ -88,16 +106,26 @@ public class FileContentSort {
      * @param start start index
      * @param end end index
      * @param sortType sort type ( 1 is asc, -1 is desc, the default is ascending)
+     * @return 返回结果文件的路径
      */
-    public static void sortText(List<File> files, int start, int end, int sortType) {
+    public static String sortText(List<File> files, int start, int end, int sortType) {
+        StringBuilder paths = new StringBuilder();
         for (File f : files) {
             try {
                 BufferedReader br = new BufferedReader(new FileReader(f));
                 String line;
                 Map<String, List<String>> map = new HashMap<>();
+                List<String> emptyKeyList = new ArrayList<>();
                 while ((line = br.readLine()) != null) {
+                    if (StringUtils.isEmpty(line) || StringUtils.isBlank(line)) {
+                        continue;
+                    }
                     if (start < 0) {
                         start = 0;
+                    }
+                    if (start >= line.length()) {
+                        emptyKeyList.add(line);
+                        continue;
                     }
                     if (end < start) {
                         end = start;
@@ -135,8 +163,12 @@ public class FileContentSort {
                         sb.append(text).append("\n");
                     }
                 }
+                for (String text : emptyKeyList) {
+                    sb.append(text).append("\n");
+                }
                 String path = f.getPath();
-                File newFile = new File(path.substring(0, path.lastIndexOf(".")) + "_new" + path.substring(path.lastIndexOf(".")));
+                String newFilePath = path.substring(0, path.lastIndexOf(".")) + "_new" + path.substring(path.lastIndexOf("."));
+                File newFile = new File(newFilePath);
                 newFile.createNewFile();
                 FileChannel fc = new FileOutputStream(newFile).getChannel();
                 ByteBuffer buffer = ByteBuffer.allocate(40960);
@@ -144,10 +176,11 @@ public class FileContentSort {
                 buffer.flip();
                 fc.write(buffer);
                 fc.close();
-
+                paths.append(newFilePath).append("\n");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        return paths.toString();
     }
 }
