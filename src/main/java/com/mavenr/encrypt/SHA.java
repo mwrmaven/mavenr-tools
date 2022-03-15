@@ -1,11 +1,13 @@
 package com.mavenr.encrypt;
 
+import com.mavenr.common.EncryptCommon;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
  * @author mavenr
- * @Classname SHA
+ * @Classname SHA 不可逆
  * @Description SHA加解密算法
  * @Date 2021/7/7 15:59
  */
@@ -20,7 +22,7 @@ public class SHA {
         StringBuilder sb = new StringBuilder();
         String tmp;
         try {
-            MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
+            MessageDigest messageDigest = MessageDigest.getInstance(EncryptCommon.SHA_1);
             messageDigest.update(key.getBytes());
             byte[] digest = messageDigest.digest();
             for (int i = 0; i < digest.length; i++) {
