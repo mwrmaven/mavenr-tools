@@ -1,6 +1,7 @@
 package com.mavenr.image;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +34,6 @@ public class ImageUtil {
         File[] file = new File[size];
         BufferedImage[] images = new BufferedImage[size];
 
-        int[][] imageArrays = new int[size][];
-
         for (int i = 0; i < size; i++) {
             file[i] = new File(imgPaths[i]);
             try {
@@ -45,14 +44,31 @@ public class ImageUtil {
             }
 
             int width = images[i].getWidth();
-            int height = images[i].getHeight();
+            // 计算合并后的最大宽度
+            dstWidth = Math.max(dstWidth, width);
+        }
 
+        int[][] imageArrays = new int[size][];
+        // 将较窄的图片放大到最大宽
+        for (int i = 0; i < size; i++) {
+            int width = images[i].getWidth();
+            int height = images[i].getHeight();
+            if (width == dstWidth) {
+                // 从图片中读取rgb像素
+                imageArrays[i] = new int[width * height];
+                images[i].getRGB(0, 0, width, height, imageArrays[i], 0, width);
+                dstHeight += height;
+                continue;
+            }
+            // 放大比例
+            double rate = (double) dstWidth / width;
+            images[i] = scaleImage(images[i], rate);
+
+            width = images[i].getWidth();
+            height = images[i].getHeight();
             // 从图片中读取rgb像素
             imageArrays[i] = new int[width * height];
             images[i].getRGB(0, 0, width, height, imageArrays[i], 0, width);
-
-            // 计算合并后的宽度和高度
-            dstWidth = Math.max(dstWidth, width);
             dstHeight += height;
         }
 
@@ -84,5 +100,27 @@ public class ImageUtil {
             e.printStackTrace();
         }
         return true;
+    }
+
+    /**
+     * 缩放图片
+     * @return
+     */
+    public static BufferedImage scaleImage(BufferedImage image, double rate) {
+        // 获取图片的原始宽高
+        int width = image.getWidth();
+        int height = image.getHeight();
+        // 获取图片的缩放（宽高在乘以比例之后再取整）
+        Image scaleInstance = image.getScaledInstance(Double.valueOf(width * rate).intValue(),
+                Double.valueOf(height * rate).intValue(), Image.SCALE_DEFAULT);
+
+        // 缩放后的新图
+        BufferedImage outImage = new BufferedImage(Double.valueOf(width * rate).intValue(),
+                Double.valueOf(height * rate).intValue(), BufferedImage.TYPE_INT_RGB);
+        Graphics g = outImage.getGraphics();
+        g.drawImage(scaleInstance, 0, 0, null);
+        g.dispose();
+        System.out.println("缩放图片成功！");
+        return outImage;
     }
 }
