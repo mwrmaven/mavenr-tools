@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author mavenr
@@ -21,12 +22,12 @@ public class ImageUtil {
      * @param outImgPath
      * @return
      */
-    public static boolean mergeUpAndDown(String[] imgPaths, String imgType, String outImgPath) {
+    public static boolean mergeUpAndDown(List<String> imgPaths , String imgType, String outImgPath) {
         // 总高和总宽
         int dstHeight = 0;
         int dstWidth = 0;
         // 图片个数
-        int size = imgPaths.length;
+        int size = imgPaths.size();
         if (size < 2) {
             return true;
         }
@@ -35,11 +36,12 @@ public class ImageUtil {
         BufferedImage[] images = new BufferedImage[size];
 
         for (int i = 0; i < size; i++) {
-            file[i] = new File(imgPaths[i]);
+            String imgPath = imgPaths.get(i);
+            file[i] = new File(imgPath);
             try {
                 images[i] = ImageIO.read(file[i]);
             } catch (IOException e) {
-                System.out.println("读取" + imgPaths[i] + "图片失败");
+                System.out.println("读取" + imgPath + "图片失败");
                 e.printStackTrace();
             }
 
