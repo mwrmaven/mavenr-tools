@@ -18,7 +18,7 @@ public class FileOptions {
      * @param file 文件或文件夹
      */
     public static void deleteFile(File file) {
-        if (!file.exists()) {
+        if (file == null || !file.exists()) {
             return;
         }
 
