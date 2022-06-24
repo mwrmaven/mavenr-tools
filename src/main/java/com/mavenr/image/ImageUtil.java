@@ -23,14 +23,15 @@ public class ImageUtil {
      * @return
      */
     public static boolean mergeUpAndDown(List<String> imgPaths , String imgType, String outImgPath) {
-        // 总高和总宽
-        int dstHeight = 0;
-        int dstWidth = 0;
         // 图片个数
         int size = imgPaths.size();
         if (size < 2) {
             return true;
         }
+
+        // 总高和总宽
+        int dstHeight = 0;
+        int dstWidth = 0;
 
         File[] file = new File[size];
         BufferedImage[] images = new BufferedImage[size];
@@ -91,6 +92,8 @@ public class ImageUtil {
             int height = images[i].getHeight();
             imageDest.setRGB(0, h, width, height, imageArrays[i], 0, width);
             h += height;
+            // 释放读取图片的BufferedImage
+            images[i].getGraphics().dispose();
         }
 
         File outFile = new File(outImgPath);
@@ -100,6 +103,9 @@ public class ImageUtil {
         } catch (IOException e) {
             System.out.println("合并图片出错");
             e.printStackTrace();
+        } finally {
+            // 释放读取图片的BufferedImage
+            imageDest.getGraphics().dispose();
         }
         return true;
     }
