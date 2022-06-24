@@ -1,10 +1,13 @@
 package com.mavenr.image;
 
+import com.mavenr.bo.ImageWidthAndHeightt;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,6 +56,7 @@ public class ImageUtil {
 
         int[][] imageArrays = new int[size][];
         // 将较窄的图片放大到最大宽
+        List<ImageWidthAndHeightt> whList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             int width = images[i].getWidth();
             int height = images[i].getHeight();
@@ -73,6 +77,14 @@ public class ImageUtil {
             imageArrays[i] = new int[width * height];
             images[i].getRGB(0, 0, width, height, imageArrays[i], 0, width);
             dstHeight += height;
+
+            // 记录图片的宽、高
+            ImageWidthAndHeightt iwah = new ImageWidthAndHeightt();
+            iwah.setWidth(width);
+            iwah.setHeight(height);
+            whList.add(iwah);
+            // 释放读取图片的BufferedImage
+            images[i].getGraphics().dispose();
         }
 
         // 合成图片的像素大小
@@ -88,12 +100,11 @@ public class ImageUtil {
         BufferedImage imageDest = new BufferedImage(dstWidth, dstHeight, BufferedImage.TYPE_INT_RGB);
         int h = 0;
         for (int i = 0; i < size; i++) {
-            int width = images[i].getWidth();
-            int height = images[i].getHeight();
+            ImageWidthAndHeightt wh = whList.get(i);
+            int width = wh.getWidth();
+            int height = wh.getHeight();
             imageDest.setRGB(0, h, width, height, imageArrays[i], 0, width);
             h += height;
-            // 释放读取图片的BufferedImage
-            images[i].getGraphics().dispose();
         }
 
         File outFile = new File(outImgPath);
