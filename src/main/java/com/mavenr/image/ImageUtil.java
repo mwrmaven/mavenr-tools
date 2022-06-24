@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -65,6 +66,11 @@ public class ImageUtil {
                 imageArrays[i] = new int[width * height];
                 images[i].getRGB(0, 0, width, height, imageArrays[i], 0, width);
                 dstHeight += height;
+
+                ImageWidthAndHeightt iwah = new ImageWidthAndHeightt();
+                iwah.setWidth(width);
+                iwah.setHeight(height);
+                whList.add(iwah);
                 continue;
             }
             // 放大比例
@@ -75,6 +81,7 @@ public class ImageUtil {
             height = temImage.getHeight();
             // 从图片中读取rgb像素
             imageArrays[i] = new int[width * height];
+            System.out.println("缩放图片：w=" + width + "; h=" + height + "; imageArrays[i].length = " + imageArrays[i].length);
             temImage.getRGB(0, 0, width, height, imageArrays[i], 0, width);
             dstHeight += height;
 
@@ -103,6 +110,7 @@ public class ImageUtil {
             ImageWidthAndHeightt wh = whList.get(i);
             int width = wh.getWidth();
             int height = wh.getHeight();
+            System.out.println("生成图片：w=" + width + "; h=" + height + "; imageArrays[i].length = " + imageArrays[i].length);
             imageDest.setRGB(0, h, width, height, imageArrays[i], 0, width);
             h += height;
         }
@@ -140,7 +148,6 @@ public class ImageUtil {
         g.drawImage(scaleInstance, 0, 0, null);
         g.dispose();
         // 释放读取图片的BufferedImage
-        scaleInstance.getGraphics().dispose();
         image.getGraphics().dispose();
         System.out.println("缩放图片成功！");
         return outImage;
