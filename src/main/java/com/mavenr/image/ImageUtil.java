@@ -69,13 +69,13 @@ public class ImageUtil {
             }
             // 放大比例
             double rate = (double) dstWidth / width;
-            images[i] = scaleImage(images[i], rate);
+            BufferedImage temImage = scaleImage(images[i], rate);
 
-            width = images[i].getWidth();
-            height = images[i].getHeight();
+            width = temImage.getWidth();
+            height = temImage.getHeight();
             // 从图片中读取rgb像素
             imageArrays[i] = new int[width * height];
-            images[i].getRGB(0, 0, width, height, imageArrays[i], 0, width);
+            temImage.getRGB(0, 0, width, height, imageArrays[i], 0, width);
             dstHeight += height;
 
             // 记录图片的宽、高
@@ -84,7 +84,7 @@ public class ImageUtil {
             iwah.setHeight(height);
             whList.add(iwah);
             // 释放读取图片的BufferedImage
-            images[i].getGraphics().dispose();
+            temImage.getGraphics().dispose();
         }
 
         // 合成图片的像素大小
@@ -139,6 +139,9 @@ public class ImageUtil {
         Graphics g = outImage.getGraphics();
         g.drawImage(scaleInstance, 0, 0, null);
         g.dispose();
+        // 释放读取图片的BufferedImage
+        scaleInstance.getGraphics().dispose();
+        image.getGraphics().dispose();
         System.out.println("缩放图片成功！");
         return outImage;
     }
