@@ -104,6 +104,8 @@ public class ImageUtil {
         }
 
         try {
+            System.gc();
+            System.out.println("等待3秒");
             Thread.sleep(3000);
         } catch (InterruptedException e) {
             e.printStackTrace();
