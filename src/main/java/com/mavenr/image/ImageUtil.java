@@ -52,7 +52,7 @@ public class ImageUtil {
 
             int width = images[i].getWidth();
             // 计算合并后的最大宽度
-            dstWidth = Math.max(dstWidth, width);
+            dstWidth = Math.min(dstWidth, width);
         }
 
         int[][] imageArrays = new int[size][];
@@ -101,14 +101,6 @@ public class ImageUtil {
         if (dstHeight < 1) {
             System.out.println("合成图片的高度小于1");
             return false;
-        }
-
-        try {
-            System.gc();
-            System.out.println("等待3秒");
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
         }
 
         // 生成新图片
@@ -161,13 +153,4 @@ public class ImageUtil {
         return outImage;
     }
 
-    public static void main(String[] args) {
-        List<String> filePaths = new ArrayList<>();
-        filePaths.add("C:\\Users\\mawen\\Desktop\\1.jpg");
-        filePaths.add("C:\\Users\\mawen\\Desktop\\2.jpg");
-        filePaths.add("C:\\Users\\mawen\\Desktop\\3.jpg");
-        filePaths.add("C:\\Users\\mawen\\Desktop\\4.jpg");
-
-        mergeUpAndDown(filePaths, "jpg", "C:\\Users\\mawen\\Desktop\\5.jpg");
-    }
 }
