@@ -103,6 +103,12 @@ public class ImageUtil {
             return false;
         }
 
+        try {
+            Thread.sleep(3000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         // 生成新图片
         BufferedImage imageDest = new BufferedImage(dstWidth, dstHeight, BufferedImage.TYPE_INT_RGB);
         int h = 0;
@@ -151,5 +157,15 @@ public class ImageUtil {
         image.getGraphics().dispose();
         System.out.println("缩放图片成功！");
         return outImage;
+    }
+
+    public static void main(String[] args) {
+        List<String> filePaths = new ArrayList<>();
+        filePaths.add("C:\\Users\\mawen\\Desktop\\1.jpg");
+        filePaths.add("C:\\Users\\mawen\\Desktop\\2.jpg");
+        filePaths.add("C:\\Users\\mawen\\Desktop\\3.jpg");
+        filePaths.add("C:\\Users\\mawen\\Desktop\\4.jpg");
+
+        mergeUpAndDown(filePaths, "jpg", "C:\\Users\\mawen\\Desktop\\5.jpg");
     }
 }
