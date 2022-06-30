@@ -35,7 +35,7 @@ public class ImageUtil {
 
         // 总高和总宽
         int dstHeight = 0;
-        int dstWidth = 0;
+        int dstWidth = Integer.MAX_VALUE;
 
         File[] file = new File[size];
         BufferedImage[] images = new BufferedImage[size];
